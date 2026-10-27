@@ -1,0 +1,89 @@
+{{define "feed.html"}}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F5F7FA">
+  <title>{{.Acid.ReactionName}}</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="iphone">
+    <div class="phone-screen">
+      <div class="dynamic-island"></div>
+
+      <div class="feed-card">
+        {{if .Acid.VideoURL}}
+        <video class="feed-video" autoplay muted loop playsinline>
+          <source src="{{.Acid.VideoURL}}" type="video/mp4">
+        </video>
+        {{else}}
+        <div class="feed-video" style="background:#0B1F2E;display:flex;align-items:center;justify-content:center;color:#fff;">
+          Видео реакции
+        </div>
+        {{end}}
+
+        <div class="feed-overlay">
+          <div class="feed-top"></div>
+
+          <div class="feed-bottom">
+            <div class="feed-main">
+              <!-- Слева: название + описание с 2 строками до «Ещё» -->
+              <div class="feed-text">
+                <h2 class="feed-title">{{.Acid.AcidName}} — {{.Acid.AcidFormula}}</h2>
+
+                <details class="feed-desc">
+                  <summary>
+                    <span class="feed-desc-preview">{{.Acid.Description}}</span>
+                    <span class="feed-desc-toggle">Ещё ▾</span>
+                  </summary>
+                  <p>{{.Acid.Description}}</p>
+                </details>
+              </div>
+
+              <!-- Справа сверху вниз: Лайк → Следующая → Конц. → М.м. -->
+              <div class="feed-actions">
+                <div class="like-block">
+                  <span class="like-icon">♥</span>
+                  <span class="like-count">{{.Acid.LikeCount}}</span>
+                </div>
+
+                <a class="next-btn" href="/feed?id={{.Acid.ID}}&next=true" title="Следующая кислота">
+                  <span class="next-icon">▶</span>
+                </a>
+
+                <div class="feed-field">
+                  <span class="field-label">Конц.</span>
+                  <span class="field-value">{{printf "%.0f" .Acid.Concentration}} %</span>
+                </div>
+
+                <div class="feed-field">
+                  <span class="field-label">М.м.</span>
+                  <span class="field-value">{{printf "%.2f" .Acid.MolarMass}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="tabbar">
+        <a class="tab-item tab-item--active" href="/feed">
+          <span class="tab-icon">♥</span>
+          <span>Лента</span>
+        </a>
+        <a class="tab-item" href="/add">
+          <span class="tab-icon">+</span>
+          <span>Добавить</span>
+        </a>
+        <a class="tab-item" href="/grid">
+          <span class="tab-icon">▦</span>
+          <span>Каталог</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+</body>
+</html>
+{{end}}

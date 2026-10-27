@@ -1,0 +1,116 @@
+{{define "grid.html"}}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F5F7FA">
+  <title>Каталог реакций</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="iphone">
+    <div class="phone-screen">
+      <div class="dynamic-island"></div>
+
+      <div class="page-content tile-page">
+        <form class="filter-form" method="GET" action="/grid">
+          <div class="range-slider">
+            <div class="range-values">
+              <span class="range-bubble" id="bubbleMin">
+                {{if .FilterMin}}{{.FilterMin}}{{else}}0{{end}}
+              </span>
+              <span class="range-bubble" id="bubbleMax">
+                {{if .FilterMax}}{{.FilterMax}}{{else}}150{{end}}
+              </span>
+            </div>
+
+            <div class="range-track">
+              <div class="range-fill" id="rangeFill"></div>
+              <input type="range" id="rangeMin" name="min"
+                     min="0" max="150" step="1"
+                     value="{{if .FilterMin}}{{.FilterMin}}{{else}}0{{end}}">
+              <input type="range" id="rangeMax" name="max"
+                     min="0" max="150" step="1"
+                     value="{{if .FilterMax}}{{.FilterMax}}{{else}}150{{end}}">
+            </div>
+          </div>
+
+          <button type="submit">Найти</button>
+        </form>
+
+        {{if .Acids}}
+        <div class="tile-grid">
+          {{range .Acids}}
+          <a class="tile-card" href="/feed?id={{.ID}}">
+            {{if .ImageURL}}
+            <img class="tile-img" src="{{.ImageURL}}" alt="{{.AcidName}}">
+            {{else}}
+            <div class="tile-img"></div>
+            {{end}}
+            <div class="tile-info">
+              <span class="tile-name">{{.AcidName}} — {{.AcidFormula}}</span>
+              <span class="tile-mm">{{printf "%.2f" .MolarMass}} г/моль</span>
+              <span class="tile-likes">♥ {{.LikeCount}}</span>
+            </div>
+          </a>
+          {{end}}
+        </div>
+        {{else}}
+        <div class="empty-state">
+          Ничего не найдено. Попробуйте изменить диапазон фильтра.
+        </div>
+        {{end}}
+      </div>
+
+      <nav class="tabbar">
+        <a class="tab-item" href="/feed">
+          <span class="tab-icon">♥</span>
+          <span>Лента</span>
+        </a>
+        <a class="tab-item" href="/add">
+          <span class="tab-icon">+</span>
+          <span>Добавить</span>
+        </a>
+        <a class="tab-item tab-item--active" href="/grid">
+          <span class="tab-icon">▦</span>
+          <span>Каталог</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Мизерный скрипт для синхронизации ползунков и пузырьков -->
+  <script>
+    (function () {
+      const minEl = document.getElementById('rangeMin');
+      const maxEl = document.getElementById('rangeMax');
+      const fill = document.getElementById('rangeFill');
+      const bMin = document.getElementById('bubbleMin');
+      const bMax = document.getElementById('bubbleMax');
+      if (!minEl || !maxEl || !fill) return;
+
+      const MIN = +minEl.min, MAX = +maxEl.max;
+      const pct = v => ((v - MIN) / (MAX - MIN)) * 100;
+
+      function render() {
+        let a = +minEl.value, b = +maxEl.value;
+        if (a > b) { [a, b] = [b, a]; }
+        fill.style.left  = pct(a) + '%';
+        fill.style.width = (pct(b) - pct(a)) + '%';
+
+        bMin.textContent = a;
+        bMax.textContent = b;
+
+        bMin.style.left = pct(a) + '%';
+        bMax.style.left = pct(b) + '%';
+      }
+
+      minEl.addEventListener('input', render);
+      maxEl.addEventListener('input', render);
+      render();
+    })();
+  </script>
+</body>
+</html>
+{{end}}

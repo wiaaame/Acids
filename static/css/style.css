@@ -1,0 +1,559 @@
+/* ============================================================
+   CO₂ из карбоната и кислоты — стили приложения
+   (без JS, портрет 375×812, MinIO-медиа)
+   ============================================================ */
+
+/* ===== ПЕРЕМЕННЫЕ ===== */
+:root {
+  --color-primary: #1B4F72;
+  --color-accent: #2E86C1;
+  --color-bg: #F5F7FA;
+  --color-surface: #FFFFFF;
+  --color-text: #1C2833;
+  --color-muted: #7B8A97;
+  --color-border: #E4E9ED;
+  --card-radius: 14px;
+  --shadow-soft: 0 2px 8px rgb(27, 79, 114, 0.08);
+
+  /* Figma-рамка */
+  --frame-w: 375px;
+  --frame-h: 812px;
+
+  /* Фиксированные зоны */
+  --tabbar-h: 64px;
+
+  /* iPhone-корпус */
+  --iphone-bezel: #0d0d0f;
+  --iphone-radius: 44px;
+  --screen-radius: 36px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Segoe UI", Roboto, -apple-system, Arial, sans-serif;
+  background: radial-gradient(circle at 50% 0%, #e8eef5 0%, #cfd9e4 100%);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 12px;
+}
+
+/* ===== КОРПУС IPHONE ===== */
+.iphone {
+  position: relative;
+  width: calc(var(--frame-w) + 16px);
+  height: calc(var(--frame-h) + 16px);
+  background: var(--iphone-bezel);
+  border-radius: var(--iphone-radius);
+  padding: 8px;
+  box-shadow: 0 20px 50px rgb(0, 0, 0, 0.35);
+}
+.iphone::before,
+.iphone::after {
+  content: "";
+  position: absolute;
+  width: 3px;
+  background: #2a2a2e;
+  border-radius: 3px;
+}
+.iphone::before { top: 130px; left: -3px; height: 55px; }
+.iphone::after  { top: 200px; right: -3px; height: 80px; }
+
+.phone-screen {
+  position: relative;
+  width: var(--frame-w);
+  height: var(--frame-h);
+  background: var(--color-bg);
+  border-radius: var(--screen-radius);
+  overflow: hidden;
+}
+
+/* ===== DYNAMIC ISLAND (часы/Wi-Fi/батарея убраны) ===== */
+.dynamic-island {
+  position: absolute;
+  top: 10px; left: 50%;
+  transform: translateX(-50%);
+  width: 110px; height: 30px;
+  background: #000;
+  border-radius: 20px;
+  z-index: 50;
+}
+
+/* ============================================================
+   ЛЕНТА (TikTok-стиль)
+   ============================================================ */
+.feed-card {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  bottom: var(--tabbar-h);
+  overflow: hidden;
+}
+
+.feed-video {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+.feed-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 44px 12px 16px 12px;
+  background: linear-gradient(
+    to bottom,
+    rgb(0,0,0,0.45) 0%,
+    transparent 25%,
+    transparent 50%,
+    rgb(0,0,0,0.85) 100%
+  );
+}
+
+.feed-top { display: flex; justify-content: flex-start; }
+
+/* ===== Низ ленты: слева текст, справа параметры+иконки ===== */
+.feed-bottom { color: #fff; }
+
+.feed-main {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Слева: название + «Ещё» */
+.feed-text {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 6px;
+}
+.feed-title {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* «Ещё» без JS: свёрнуто — ровно 2 строки, развёрнуто — полный текст */
+.feed-desc summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 0;
+}
+.feed-desc summary::-webkit-details-marker { display: none; }
+
+.feed-desc-preview {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;           /* ровно 2 строки */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.35;
+  color: #EAF2F8;
+}
+.feed-desc-toggle {
+  display: inline-block;
+  margin-top: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #D6EAF8;
+}
+
+/* В раскрытом виде: превью и «Ещё ▾» скрыты, показан полный текст и «Ещё ▴» */
+.feed-desc[open] .feed-desc-preview,
+.feed-desc[open] .feed-desc-toggle { display: none; }
+
+.feed-desc p {
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0;
+  color: #EAF2F8;
+}
+.feed-desc-hide {
+  display: none;
+  margin-top: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #D6EAF8;
+  cursor: pointer;
+}
+.feed-desc[open] .feed-desc-hide { display: inline-block; }
+
+/* Справа сверху вниз: лайк → next → конц → м.м. */
+.feed-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  padding-bottom: 4px;
+}
+
+.like-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+}
+.like-icon {
+  font-size: 30px;
+  line-height: 1;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+.like-count {
+  font-size: 12px;
+  margin-top: 2px;
+  font-weight: 600;
+}
+
+.next-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  color: #fff;
+  border-radius: 50%;
+  text-decoration: none;
+  font-size: 22px;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+.next-btn:hover { color: #D6EAF8; }
+.next-icon { line-height: 1; }
+
+/* Компактные плашки под иконками */
+.feed-field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,0.16);
+  backdrop-filter: blur(6px);
+  padding: 4px 8px;
+  border-radius: 8px;
+  min-width: 62px;
+}
+.field-label { font-size: 9px; color: #D6EAF8; }
+.field-value { font-size: 12px; font-weight: 600; }
+
+/* «Ещё» — корректная свёртка/разворот */
+.feed-desc summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 0;
+}
+.feed-desc summary::-webkit-details-marker { display: none; }
+
+.feed-desc-preview {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.35;
+  color: #EAF2F8;
+}
+.feed-desc-toggle {
+  display: inline-block;
+  margin-top: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #D6EAF8;
+}
+
+/* Когда открыто: превью и «Ещё ▾» скрываем, показываем полный текст */
+.feed-desc[open] .feed-desc-preview,
+.feed-desc[open] .feed-desc-toggle { display: none; }
+
+.feed-desc p {
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0;
+  color: #EAF2F8;
+}
+
+/* ============================================================
+   ПАНЕЛЬ ВКЛАДОК
+   ============================================================ */
+.tabbar {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: var(--tabbar-h);
+  padding-bottom: 14px;
+  display: flex;
+  background: rgb(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid rgb(0, 0, 0, 0.06);
+  z-index: 30;
+}
+.tabbar::after {
+  content: "";
+  position: absolute;
+  bottom: 5px; left: 50%;
+  transform: translateX(-50%);
+  width: 120px; height: 4px;
+  background: #1c1c1e;
+  border-radius: 3px;
+  opacity: 0.85;
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding-top: 8px;
+  color: var(--color-muted);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+.tab-icon { font-size: 20px; line-height: 1; }
+.tab-item--active { color: var(--color-accent); }
+.tab-item:hover { color: var(--color-primary); }
+
+/* ============================================================
+   СТРАНИЦА ДОБАВЛЕНИЯ
+   ============================================================ */
+.add-page { padding: 44px 16px 16px; }
+
+.add-heading {
+  color: var(--color-primary);
+  font-size: 18px;
+  margin: 2px 0 12px;
+  font-weight: 700;
+}
+
+/* Видео и фото — друг под другом */
+.media-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.media-slot {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: var(--shadow-soft);
+}
+.add-thumb {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #dfe6ea;
+  display: block;
+}
+.add-thumb--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-muted);
+  font-size: 12px;
+}
+.media-input {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--color-muted);
+}
+
+.add-form {
+  background: var(--color-surface);
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+.form-field input,
+.form-field select {
+  border: 1px solid #D5DBDB;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 14px;
+  color: var(--color-text);
+  background: #FBFCFC;
+  width: 100%;
+}
+
+/* ============================================================
+   КАТАЛОГ (grid) — фильтр как на скриншоте (двойной слайдер)
+   ============================================================ */
+.tile-page { padding: 44px 16px 16px; }
+
+.filter-form { margin-bottom: 14px; }
+
+.range-slider {
+  position: relative;
+  height: 70px;
+  margin-bottom: 10px;
+}
+
+/* Пузырьки со значениями */
+.range-values {
+  position: relative;
+  height: 30px;
+}
+.range-bubble {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  white-space: nowrap;
+}
+.range-bubble::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  transform: translateX(-50%) rotate(45deg);
+  width: 8px; height: 8px;
+  background: #fff;
+  border-right: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Дорожка */
+.range-track {
+  position: relative;
+  height: 24px;
+  margin-top: 6px;
+}
+.range-track::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 4px;
+  background: #E4E9ED;
+  border-radius: 2px;
+}
+.range-fill {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 4px;
+  background: var(--color-accent);
+  border-radius: 2px;
+}
+
+/* Два наложенных range */
+.range-track input[type="range"] {
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  height: 24px;
+  margin: 0;
+  background: none;
+  pointer-events: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.range-track input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: auto;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--color-accent);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  cursor: pointer;
+}
+.range-track input[type="range"]::-moz-range-thumb {
+  pointer-events: auto;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--color-accent);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  cursor: pointer;
+}
+
+/* Кнопка «Найти» — крупная */
+.filter-form button {
+  width: 100%;
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 0;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.3px;
+}
+.filter-form button:hover { background: var(--color-primary); }
+
+/* Плитка */
+.tile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.tile-card {
+  display: block;
+  background: var(--color-surface);
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--color-text);
+  transition: transform 0.15s ease;
+}
+.tile-card:hover { transform: translateY(-2px); }
+.tile-img {
+  width: 100%;
+  height: 95px;
+  object-fit: cover;
+  background: #dfe6ea;
+}
+.tile-info {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+}
+.tile-name { font-weight: 600; font-size: 12px; }
+.tile-mm { color: var(--color-muted); font-size: 11px; }
+.tile-likes { color: var(--color-accent); font-weight: 600; font-size: 11px; }
+
+.empty-state {
+  text-align: center;
+  color: var(--color-muted);
+  padding: 40px 20px;
+  font-size: 13px;
+}

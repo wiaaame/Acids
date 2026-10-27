@@ -1,0 +1,89 @@
+{{define "add.html"}}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F5F7FA">
+  <title>Новая кислота</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="iphone">
+    <div class="phone-screen">
+      <div class="dynamic-island"></div>
+
+      <div class="page-content add-page">
+        <h1 class="add-heading">Новая кислота</h1>
+
+        <div class="media-stack">
+          <div class="media-slot">
+            {{if .Draft.VideoURL}}
+            <video class="add-thumb" autoplay muted loop playsinline>
+              <source src="{{.Draft.VideoURL}}" type="video/mp4">
+            </video>
+            {{else}}
+            <div class="add-thumb add-thumb--empty">Видео не выбрано</div>
+            {{end}}
+            <input type="file" accept="video/*" class="media-input">
+          </div>
+
+          <div class="media-slot">
+            {{if .Draft.ImageURL}}
+            <img class="add-thumb" src="{{.Draft.ImageURL}}" alt="{{.Draft.AcidName}}">
+            {{else}}
+            <div class="add-thumb add-thumb--empty">Фото не выбрано</div>
+            {{end}}
+            <input type="file" accept="image/*" class="media-input">
+          </div>
+        </div>
+
+        <form class="add-form" method="GET" action="/add" onsubmit="return false;">
+          <label class="form-field">
+            <span>Выберите кислоту</span>
+            <select name="acidId">
+              {{range .All}}
+              <option value="{{.ID}}" {{if eq .ID $.Draft.ID}}selected{{end}}>
+                {{.AcidName}} — {{.AcidFormula}}
+              </option>
+              {{end}}
+            </select>
+          </label>
+
+          <label class="form-field">
+            <span>Масса карбоната кальция, г</span>
+            <input type="number" name="mass" step="0.1" min="0" placeholder="Например, 10">
+          </label>
+
+          <label class="form-field">
+            <span>Молярная масса, г/моль</span>
+            <input type="text" name="molarMass" value="{{printf "%.2f" .Draft.MolarMass}}" readonly>
+          </label>
+
+          <label class="form-field">
+            <span>Концентрация кислоты, %</span>
+            <input type="number" name="concentration" step="1" min="0" max="100"
+                   value="{{printf "%.0f" .Draft.Concentration}}">
+          </label>
+        </form>
+      </div>
+
+      <nav class="tabbar">
+        <a class="tab-item" href="/feed">
+          <span class="tab-icon">♥</span>
+          <span>Лента</span>
+        </a>
+        <a class="tab-item tab-item--active" href="/add">
+          <span class="tab-icon">+</span>
+          <span>Добавить</span>
+        </a>
+        <a class="tab-item" href="/grid">
+          <span class="tab-icon">▦</span>
+          <span>Каталог</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+</body>
+</html>
+{{end}}
