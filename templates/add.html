@@ -1,0 +1,132 @@
+{{define "add.html"}}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#F5F7FA">
+    <title>Новая кислота</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="iphone">
+    <div class="phone-screen">
+        <div class="dynamic-island"></div>
+        <div class="page-content add-page">
+            <h1 class="add-heading">Новая кислота</h1>
+
+            <div class="media-stack">
+                <div class="media-slot">
+                    {{if and .Draft .Draft.VideoURL}}
+                    <video class="add-thumb" data-check autoplay muted loop playsinline>
+                        <source src="{{.Draft.VideoURL}}" type="video/mp4">
+                    </video>
+                    {{else}}
+                    <video class="add-thumb add-thumb--video" autoplay muted loop playsinline>
+                        <source src="/static/video/default-video.mp4" type="video/mp4">
+                    </video>
+                    {{end}}
+                    <input type="file" accept="video/*" class="media-input" id="videoFile">
+                </div>
+                <div class="media-slot">
+                    {{if and .Draft .Draft.ImageURL}}
+                    <img class="add-thumb" src="{{.Draft.ImageURL}}" alt="{{.Draft.AcidName}}"
+                         onerror="this.onerror=null;this.src='/static/img/default-image.png';">
+                    {{else}}
+                    <div class="add-thumb add-thumb--empty">
+                        <img src="/static/img/default-image.png" alt="Фото по умолчанию" style="width:100%;height:100%;object-fit:cover;">
+                    </div>
+                    {{end}}
+                    <input type="file" accept="image/*" class="media-input" id="imageFile">
+                </div>
+            </div>
+
+            {{if .HasDraft}}
+            <form class="add-form" method="POST" action="/publish">
+                <input type="hidden" name="acid_id" value="{{.Draft.ID}}">
+                <input type="hidden" name="image_key" value="{{.Draft.ImageKey}}">
+                <input type="hidden" name="video_key" value="{{.Draft.VideoKey}}">
+                <label class="form-field">
+                    <span>Описание</span>
+                    <textarea name="description" rows="3" placeholder="Например, выделение CO2 при взаимодействии...">{{.Draft.Description}}</textarea>
+                </label>
+                <label class="form-field">
+                    <span>Молярная масса, г/моль</span>
+                    <input type="number" name="molar_mass" step="0.01" min="0" value="{{printf "%.2f" .Draft.MolarMass}}">
+                </label>
+                <label class="form-field">
+                    <span>Концентрация, %</span>
+                    <input type="number" name="concentration" step="1" min="0" max="100" value="{{printf "%.0f" .Draft.Concentration}}">
+                </label>
+                <button type="submit" class="btn-primary">Опубликовать</button>
+            </form>
+            {{else}}
+            <form class="add-form" method="POST" action="/create">
+                <input type="hidden" name="image_key" value="">
+                <input type="hidden" name="video_key" value="">
+                <label class="form-field">
+                    <span>Название</span>
+                    <input type="text" name="reaction_name" placeholder="Например, CaCO3 + 2HCl" required>
+                </label>
+                <p class="hint">
+                    Нажмите «Далее», чтобы создать черновик.
+                    Остальные поля заполняются на этапе публикации.
+                </p>
+                <button type="submit" class="btn-primary">Далее</button>
+            </form>
+            {{end}}
+        </div>
+        <nav class="tabbar">
+            <a class="tab-item" href="/feed">
+                <span class="tab-icon">♥</span>
+                <span>Лента</span>
+            </a>
+            <a class="tab-item tab-item--active" href="/add">
+                <span class="tab-icon">+</span>
+                <span>Добавить</span>
+            </a>
+            <a class="tab-item" href="/grid">
+                <span class="tab-icon">■</span>
+                <span>Каталог</span>
+            </a>
+        </nav>
+    </div>
+</div>
+<script>
+    (function () {
+        function bindFileKey(fileId, keyName) {
+            const input = document.getElementById(fileId);
+            if (!input) return;
+            input.addEventListener('change', function () {
+                const f = this.files && this.files[0];
+                const hidden = document.querySelector('input[name="' + keyName + '"]');
+                if (f && hidden) hidden.value = f.name;
+            });
+        }
+        bindFileKey('imageFile', 'image_key');
+        bindFileKey('videoFile', 'video_key');
+
+        var DEFAULT_VIDEO = '/static/video/default-video.mp4';
+        function useDefault(v) {
+            if (v.dataset.fb) return;
+            v.dataset.fb = '1';
+            v.innerHTML = '';
+            v.src = DEFAULT_VIDEO;
+            v.load();
+            var p = v.play();
+            if (p && p.catch) p.catch(function () {});
+        }
+        var vids = document.querySelectorAll('video[data-check]');
+        vids.forEach(function (v) {
+            v.addEventListener('error', function () { useDefault(v); });
+        });
+        setTimeout(function () {
+            vids.forEach(function (v) {
+                if (v.readyState === 0 && !v.dataset.fb) useDefault(v);
+            });
+        }, 800);
+    })();
+</script>
+</body>
+</html>
+{{end}}

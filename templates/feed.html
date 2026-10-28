@@ -1,0 +1,106 @@
+{{define "feed.html"}}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#F5F7FA">
+    <title>{{.Acid.ReactionName}}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="iphone">
+    <div class="phone-screen">
+        <div class="dynamic-island"></div>
+        <div class="feed-card">
+            {{if .Acid.VideoURL}}
+            <video class="feed-video" data-check autoplay muted loop playsinline>
+                <source src="{{.Acid.VideoURL}}" type="video/mp4">
+            </video>
+            {{else}}
+            <video class="feed-video feed-video--empty" autoplay muted loop playsinline>
+                <source src="/static/video/default-video.mp4" type="video/mp4">
+            </video>
+            {{end}}
+            <div class="feed-overlay">
+                <div class="feed-top"></div>
+                <div class="feed-bottom">
+                    <div class="feed-main">
+                        <div class="feed-text">
+                            <h2 class="feed-title">
+                                {{if .Acid.AcidName}}{{.Acid.AcidName}}{{else}}{{if .Acid.ReactionName}}{{.Acid.ReactionName}}{{else}}Без названия{{end}}{{end}}
+                                {{if .Acid.AcidFormula}} — {{.Acid.AcidFormula}}{{end}}
+                            </h2>
+                            <details class="feed-desc">
+                                <summary>
+                                    <span class="feed-desc-preview">
+                                        {{if .Acid.Description}}{{.Acid.Description}}{{else}}Описание пока не добавлено{{end}}
+                                    </span>
+                                    <span class="feed-desc-toggle">Ещё</span>
+                                </summary>
+                                <p>{{.Acid.Description}}</p>
+                            </details>
+                        </div>
+                        <div class="feed-actions">
+                            <div class="like-block">
+                                <span class="like-icon">♥</span>
+                                <span class="like-count">{{.Acid.LikeCount}}</span>
+                            </div>
+                            <a class="next-btn" href="/feed?id={{.Acid.ID}}&next=true" title="Следующая кислота">
+                                <span class="next-icon">▶</span>
+                            </a>
+                            <div class="feed-field">
+                                <span class="field-label">Конц.</span>
+                                <span class="field-value">{{printf "%.0f" .Acid.Concentration}}</span>
+                            </div>
+                            <div class="feed-field">
+                                <span class="field-label">М.м.</span>
+                                <span class="field-value">{{printf "%.2f" .Acid.MolarMass}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <nav class="tabbar">
+            <a class="tab-item tab-item--active" href="/feed">
+                <span class="tab-icon">♥</span>
+                <span>Лента</span>
+            </a>
+            <a class="tab-item" href="/add">
+                <span class="tab-icon">+</span>
+                <span>Добавить</span>
+            </a>
+            <a class="tab-item" href="/grid">
+                <span class="tab-icon">■</span>
+                <span>Каталог</span>
+            </a>
+        </nav>
+    </div>
+</div>
+<script>
+    (function () {
+        var DEFAULT_VIDEO = '/static/video/default-video.mp4';
+        function useDefault(v) {
+            if (v.dataset.fb) return;
+            v.dataset.fb = '1';
+            v.innerHTML = '';
+            v.src = DEFAULT_VIDEO;
+            v.load();
+            var p = v.play();
+            if (p && p.catch) p.catch(function () {});
+        }
+        var vids = document.querySelectorAll('video[data-check]');
+        vids.forEach(function (v) {
+            v.addEventListener('error', function () { useDefault(v); });
+        });
+        setTimeout(function () {
+            vids.forEach(function (v) {
+                if (v.readyState === 0 && !v.dataset.fb) useDefault(v);
+            });
+        }, 800);
+    })();
+</script>
+</body>
+</html>
+{{end}}
